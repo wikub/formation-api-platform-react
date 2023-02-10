@@ -2,11 +2,22 @@
 
 namespace App\Entity;
 
-use App\Repository\InvoiceRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiResource;
+use App\Repository\InvoiceRepository;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
+#[ApiResource(
+    paginationEnabled: true,
+    paginationClientEnabled: true,
+    paginationItemsPerPage: 10,
+    paginationClientItemsPerPage: true,
+    order: ['sentAt' => 'DESC'],
+)]
+#[ApiFilter(OrderFilter::class, properties: ['sentAt', 'amount'])]
 class Invoice
 {
     #[ORM\Id]
