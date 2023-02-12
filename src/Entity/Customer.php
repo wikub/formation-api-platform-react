@@ -2,17 +2,32 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CustomerRepository;
+use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['customers_read']],
+    operations: [
+        new GetCollection(uriTemplate: 'clients'),
+        new Get(uriTemplate: '/clients/{id}'),
+        new Post(),
+        new Put(),
+        new Delete()
+    ]
+)]
 #[ApiFilter(SearchFilter::class, properties: ['id' => 'exact', 'firstname' => 'partial', 'lastname' => 'partial', 'company' => 'partial'])]
 #[ApiFilter(OrderFilter::class)]
 class Customer
@@ -20,29 +35,52 @@ class Customer
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['customers_read', 'invoices_read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['customers_read', 'invoices_read'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['customers_read', 'invoices_read'])]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['customers_read', 'invoices_read'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['customers_read', 'invoices_read'])]
     private ?string $company = null;
 
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Invoice::class)]
+    #[Groups(['customers_read'])]
     private Collection $invoices;
 
     #[ORM\ManyToOne(inversedBy: 'customers')]
+    #[Groups(['customers_read'])]
     private ?User $user = null;
 
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
+    }
+
+    #[Groups(['customers_read'])]
+    public function getTotalAmount(): float
+    {
+        return array_reduce($this->invoices->toArray(), function (float $total, Invoice $invoice) {
+            return $total + $invoice->getAmount();
+        }, 0);
+    }
+
+    #[Groups(['customers_read'])]
+    public function getUnpaidAmount(): float
+    {
+        return array_reduce($this->invoices->toArray(), function (float $total, Invoice $invoice) {
+            return $total + ($invoice->getStatus() === 'PAID' || $invoice->getStatus() === 'CENCELLED' ? 0 : $invoice->getAmount());
+        }, 0);
     }
 
     public function getId(): ?int
