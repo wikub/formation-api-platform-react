@@ -16,6 +16,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use App\Controller\InvoiceIncrementationController;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
 #[ApiResource(
@@ -66,23 +67,32 @@ class Invoice
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\NotBlank(message: 'Amount is required')]
+    #[Assert\Type(type: 'numeric', message: 'The amount {{ value }} is not a valid number.')]
     #[Groups(['invoices_read', 'customers_read', 'invoices_read_by_user'])]
     private ?string $amount = null;
 
     #[ORM\Column]
+    #[Assert\Type(type: '\DatetimeInterface')]
+    #[Assert\NotBlank(message: 'SentAt is required')]
     #[Groups(['invoices_read', 'customers_read', 'invoices_read_by_user'])]
     private ?\DateTimeImmutable $sentAt = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Status is required')]
+    #[Assert\Choice(choices: ['SENT', 'PAID', 'CANCELLED'], message: 'The status {{ value }} is not a valid choice.')]
     #[Groups(['invoices_read', 'customers_read', 'invoices_read_by_user'])]
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'invoices')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank(message: 'Customer is required')]
     #[Groups(['invoices_read'])]
     private ?Customer $customer = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'Chrono is required')]
+    #[Assert\Type(type: 'integer', message: 'The chrono {{ value }} is not a valid number.')]
     #[Groups(['invoices_read', 'customers_read', 'invoices_read_by_user'])]
     private ?int $chrono = null;
 
