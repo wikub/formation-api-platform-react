@@ -2,28 +2,43 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use App\State\UserPasswordHasher;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(processor: UserPasswordHasher::class),
+        new Put(processor: UserPasswordHasher::class),
+        new Patch(processor: UserPasswordHasher::class),
+    ],
+    normalizationContext: ['groups' => ['users_read']],
+)]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['customers_read', 'invoices_read'])]
+    #[Groups(['customers_read', 'invoices_read', 'users_read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -39,17 +54,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Assert\NotBlank()]
     private ?string $password = null;
 
+    #[Assert\NotBlank()]
+    private ?string $plainPassword = null;
+
     #[ORM\Column(length: 255)]
-    #[Groups(['customers_read', 'invoices_read'])]
+    #[Groups(['customers_read', 'invoices_read', 'users_read'])]
     #[Assert\NotBlank()]
     #[Assert\Length(min: 3, max: 255, minMessage: 'Firstname must be at least {{ limit }} characters', maxMessage: 'Firstname must be at most {{ limit }} characters')]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['customers_read', 'invoices_read'])]
+    #[Groups(['customers_read', 'invoices_read', 'users_read'])]
     #[Assert\NotBlank()]
     #[Assert\Length(min: 3, max: 255, minMessage: 'Lastname must be at least {{ limit }} characters', maxMessage: 'Lastname must be at most {{ limit }} characters')]
     private ?string $lastname = null;
@@ -119,6 +136,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): self
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
 
         return $this;
     }
