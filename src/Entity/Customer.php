@@ -15,6 +15,7 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use App\State\UserCustomer;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -24,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(uriTemplate: 'clients'),
         new Get(uriTemplate: '/clients/{id}'),
-        new Post(),
+        new Post(processor: UserCustomer::class),
         new Put(),
         new Delete()
     ]
@@ -67,7 +68,6 @@ class Customer
 
     #[ORM\ManyToOne(inversedBy: 'customers')]
     #[Groups(['customers_read'])]
-    #[Assert\NotBlank(message: 'User is required')]
     private ?User $user = null;
 
     public function __construct()

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\State\InvoiceChrono;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Link;
@@ -29,7 +30,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(),
         new Get(),
-        new Post(),
+        new Post(processor: InvoiceChrono::class),
         new Put(),
         new Delete(),
         new Post(
@@ -73,8 +74,6 @@ class Invoice
     private ?string $amount = null;
 
     #[ORM\Column]
-    #[Assert\Type(type: '\DatetimeInterface')]
-    #[Assert\NotBlank(message: 'SentAt is required')]
     #[Groups(['invoices_read', 'customers_read', 'invoices_read_by_user'])]
     private ?\DateTimeImmutable $sentAt = null;
 
@@ -91,7 +90,6 @@ class Invoice
     private ?Customer $customer = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank(message: 'Chrono is required')]
     #[Assert\Type(type: 'integer', message: 'The chrono {{ value }} is not a valid number.')]
     #[Groups(['invoices_read', 'customers_read', 'invoices_read_by_user'])]
     private ?int $chrono = null;
