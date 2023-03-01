@@ -23,8 +23,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     normalizationContext: ['groups' => ['customers_read']],
     operations: [
-        new GetCollection(uriTemplate: 'clients'),
-        new Get(uriTemplate: '/clients/{id}'),
+        new GetCollection(),
+        new Get(),
         new Post(processor: UserCustomer::class),
         new Put(),
         new Delete()

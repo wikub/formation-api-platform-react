@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
 #[ApiResource(
-    paginationEnabled: true,
+    paginationEnabled: false,
     paginationClientEnabled: true,
     paginationItemsPerPage: 10,
     paginationClientItemsPerPage: true,
