@@ -2,6 +2,7 @@ import React, {useContext, useState} from "react";
 import { useNavigate } from 'react-router-dom';
 import AuthAPI from "../services/authAPI";
 import AuthContext from "../contexts/AuthContext";
+import Field from "../components/forms/Field";
 
 const LoginPage = () => {
 
@@ -41,32 +42,8 @@ const LoginPage = () => {
         <>
             <h1>Connexion</h1>
             <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="username">Email</label>
-                    <input 
-                        onChange={handleChange}
-                        type="email" 
-                        className={"form-control" + (error ? " is-invalid" : "")}
-                        id="username" 
-                        name="username" 
-                        placeholder="Email" 
-                        value={credentials.username}
-                    />
-                    {error && <p className="invalid-feedback">{error}</p>}
-                    
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="password">Mot de passe</label>
-                    <input 
-                        onChange={handleChange}
-                        type="password" 
-                        className="form-control" 
-                        id="password" 
-                        name="password" 
-                        value={credentials.password}
-                    />
-                </div>
+                <Field name="username" label="Identifiant" value={credentials.username} onChange={handleChange} placeholder="Identifiant" type="text" error={error} />
+                <Field name="password" label="Mot de passe" value={credentials.password} onChange={handleChange} placeholder="Mot de passe" type="password" error="" />
                 <div className="form-group">
                     <button type="submit" className="btn btn-primary">Connexion</button>
                 </div>

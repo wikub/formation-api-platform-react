@@ -1,8 +1,8 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
 import moment from "moment";
 import InvoicesAPI from "../services/invoicesAPI";
+import {Link} from "react-router-dom";
 
 const STATUS_CLASSES = {
     PAID: "success",
@@ -41,7 +41,7 @@ const InvoicesPage = props => {
         setInvoices(invoices.filter(invoice => invoice.id !== id));
         
         try {
-            await InvoicesAPI.deleteInvoice(id);
+            await InvoicesAPI.delete(id);
         } catch (error) {
             console.log(error);
             setInvoices(originalInvoices);
@@ -76,7 +76,10 @@ const InvoicesPage = props => {
 
     return (
         <>
-            <h1>Liste des factures</h1>
+            <h1>
+                Liste des factures
+                <Link to="/invoice/new" className="btn btn-primary ml-3">Nouvelle</Link>
+            </h1>
 
             <div className="form-group">
                 <input type="text" className="form-control" placeholder="Rechercher une facture" onChange={handleSearch} value={search} />
@@ -110,7 +113,7 @@ const InvoicesPage = props => {
                                 </span>
                             </td>
                             <td>
-                                <button className="btn btn-sm btn-primary">Editer</button>
+                                <Link to={`/invoice/${invoice.id}`} className="btn btn-sm btn-primary">Modifier</Link>
                                 <button 
                                     className="btn btn-sm btn-danger"
                                     onClick={() => handleDelete(invoice.id)}

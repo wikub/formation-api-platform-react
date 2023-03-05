@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
 import CustomersAPI from "../services/customersAPI";
+import {Link} from "react-router-dom";
 
 const CustomersPage = props => {
 
@@ -26,7 +27,7 @@ const CustomersPage = props => {
         setCustomers(customers.filter(customer => customer.id !== id));
         
         try {
-            await CustomersAPI.deleteCustomer(id);
+            await CustomersAPI.delete(id);
         } catch (error) {
             setCustomers(originalCustomers);
         }
@@ -55,7 +56,10 @@ const CustomersPage = props => {
 
     return ( 
     <>
-        <h1>Liste des clients</h1>
+        <h1>
+            Liste des clients
+            <Link to="/customer/new" className="btn btn-primary ml-3">Nouveau</Link>
+        </h1>
 
         <div className="form-group">
             <input type="text" className="form-control" placeholder="Rechercher un client" onChange={handleSearch} value={search} />
@@ -87,6 +91,7 @@ const CustomersPage = props => {
                         </td>
                         <td>{ customer.totalAmount.toLocaleString() } &euro;</td>
                         <td>
+                            <Link to={`/customer/${customer.id}`} className="btn btn-sm btn-primary">Modifier</Link>
                             <button 
                                 onClick={() => handleDelete(customer.id)}
                                 disabled={customer.invoices.length > 0} 

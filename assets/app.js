@@ -17,11 +17,14 @@ import Navbar from './js/components/Navbar';
 import HomePage from './js/pages/HomePage';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import CustomersPage from './js/pages/CustomersPage';
+import CustomerPage from './js/pages/CustomerPage';
 import InvoicesPage from './js/pages/InvoicesPage';
 import LoginPage from './js/pages/LoginPage';
 import AuthAPI from './js/services/authAPI';
 import AuthContext from './js/contexts/AuthContext';
 import RequireAuth from './js/components/RequireAuth';
+import InvoicePage from './js/pages/InvoicePage';
+import RegisterPage from './js/pages/RegisterPage';
 
 AuthAPI.setup();
 
@@ -35,15 +38,30 @@ const App = () => {
             <HashRouter>
                 
                 <Navbar/>
-                <main className="mt-5">
+                <main className="m-5">
                     <Routes>
                         <Route 
                             path="/login"
                             element={<LoginPage />}
                         />
+                        <Route 
+                            path="/register"
+                            element={<RegisterPage />}
+                        />
+                        <Route path="/customer/:id" element={
+                            <RequireAuth redirectTo="/login">
+                                <CustomerPage />;
+                            </RequireAuth>
+                        } />
                         <Route path="/customers" element={
                             <RequireAuth redirectTo="/login">
                                 <CustomersPage />;
+                            </RequireAuth>
+                        } />
+
+                        <Route path="/invoice/:id" element={
+                            <RequireAuth redirectTo="/login">
+                                <InvoicePage />;
                             </RequireAuth>
                         } />
                         <Route path="/invoices" element={

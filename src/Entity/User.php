@@ -63,7 +63,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['customers_read', 'invoices_read', 'users_read'])]
     #[Assert\NotBlank()]
     #[Assert\Length(min: 3, max: 255, minMessage: 'Firstname must be at least {{ limit }} characters', maxMessage: 'Firstname must be at most {{ limit }} characters')]
-    private ?string $firstName = null;
+    private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['customers_read', 'invoices_read', 'users_read'])]
@@ -161,14 +161,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    public function getFirstName(): ?string
+    public function getFirstname(): ?string
     {
-        return $this->firstName;
+        return $this->firstname;
     }
 
-    public function setFirstName(string $firstName): self
+    public function setFirstname(string $firstname): self
     {
-        $this->firstName = $firstName;
+        $this->firstname = $firstname;
 
         return $this;
     }
