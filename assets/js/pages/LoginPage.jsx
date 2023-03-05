@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import AuthAPI from "../services/authAPI";
 import AuthContext from "../contexts/AuthContext";
 import Field from "../components/forms/Field";
+import { toast } from "react-toastify";
 
 const LoginPage = () => {
 
@@ -31,9 +32,11 @@ const LoginPage = () => {
             await AuthAPI.authenticate(credentials);
             setError("");
             setIsAuthenticated(true);
+            toast.success("You have been logged in");
             navigate("/customers", { replace: true });
         } catch (error) {
             setError("Aucun compte avec cet identifiant ou mot de passe");
+            toast.error("Aucun compte avec cet identifiant ou mot de passe");
         }
     }
 

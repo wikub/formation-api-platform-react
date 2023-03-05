@@ -3,6 +3,7 @@ import Pagination from "../components/Pagination";
 import moment from "moment";
 import InvoicesAPI from "../services/invoicesAPI";
 import {Link} from "react-router-dom";
+import { toast } from "react-toastify";
 
 const STATUS_CLASSES = {
     PAID: "success",
@@ -28,7 +29,7 @@ const InvoicesPage = props => {
             const data = await InvoicesAPI.findAll();
             setInvoices(data);
         } catch (error) {
-            console.log(error);
+            toast.error("Erreur lors de la récupération des factures");
         }
     }
 
@@ -42,8 +43,9 @@ const InvoicesPage = props => {
         
         try {
             await InvoicesAPI.delete(id);
+            toast.success("Invoice deleted");
         } catch (error) {
-            console.log(error);
+            toast.error("An error has occured");
             setInvoices(originalInvoices);
         }
     }
@@ -89,8 +91,8 @@ const InvoicesPage = props => {
                 <thead>
                     <tr className="text-center">
                         <th>Chrono</th>
-                        <th>Date</th>
                         <th>Client</th>
+                        <th>Date</th>
                         <th>Montant</th>
                         <th>Etat</th>
                         <th>Actions</th>
@@ -100,10 +102,10 @@ const InvoicesPage = props => {
                     {paginateInvoices.map(invoice => (
                         <tr className="text-center" key={invoice.id}>
                             <td>{invoice.id}</td>
-                            <td>{formatDate(invoice.sentAt)}</td>
                             <td>
-                                <a href="#">{invoice.customer.firstname} {invoice.customer.lastname} </a>
+                                <Link to={"/customer/"+invoice.customer.id}>{invoice.customer.firstname} {invoice.customer.lastname}</Link>
                             </td>
+                            <td>{formatDate(invoice.sentAt)}</td>
                             <td>{invoice.amount.toLocaleString()}</td>
                             <td>
                                 <span 

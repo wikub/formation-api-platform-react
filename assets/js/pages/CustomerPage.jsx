@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import Field from "../components/forms/Field";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import CustomersAPI from "../services/customersAPI";
+import { toast } from "react-toastify";
 
 const customerPage = () => {
 
@@ -29,7 +30,7 @@ const customerPage = () => {
             const {lastname, firstname, email, company} = await CustomersAPI.find(id);
             setCustomer({lastname, firstname, email, company});
         }catch (error) {
-            console.log(error);
+            toast.error("Aucun clien trouvé");
             navigate("/customers", { replace: true });
         }
     }
@@ -55,9 +56,11 @@ const customerPage = () => {
         try {
             if(editing) {
                 await CustomersAPI.update(id, customer);
+                toast.success("Le client a bien été modifié");
                 navigate("/customers", { replace: true });
             } else {
                 await CustomersAPI.create(customer);
+                toast.success("Le client a bien été ajouté");
                 navigate("/customers", { replace: true });
             }
             
@@ -73,7 +76,7 @@ const customerPage = () => {
 
                 setErrors(apiErrors);
             }
-            
+            toast.error("Il y a des erreurs dans votre formulaire");
         }
     }
 

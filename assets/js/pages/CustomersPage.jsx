@@ -2,19 +2,23 @@ import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
 import CustomersAPI from "../services/customersAPI";
 import {Link} from "react-router-dom";
+import { toast } from "react-toastify";
+import TableLoader from "../components/loaders/TableLoader";
 
 const CustomersPage = props => {
 
     const [customers, setCustomers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
 
     const fetchCustomers = async () => {
         try {
             const data = await CustomersAPI.findAll();
             setCustomers(data);
+            setIsLoading(false);
         } catch (error) {
-            console.log(error);
+            toast.error("Une erreur s'est produite lors du chargement des clients");
         }
     }
     useEffect(() => {
@@ -28,8 +32,10 @@ const CustomersPage = props => {
         
         try {
             await CustomersAPI.delete(id);
+            toast.success("Client supprimé");
         } catch (error) {
             setCustomers(originalCustomers);
+            toast.error("An error has occured");
         }
     }
 
@@ -77,12 +83,13 @@ const CustomersPage = props => {
                     <th>Actions</th>
                 </tr>
             </thead>
+            {isLoading ? <TableLoader /> : ( 
             <tbody>
                 {paginateCustomers.map((customer, index) => (
                     <tr key={customer.id} className="text-center">
                         <td>{customer.id}</td>
                         <td>
-                            <a href="#">{customer.firstname} {customer.lastname}</a>
+                            <Link to={"/customer"+customer.id}>{customer.firstname} {customer.lastname}</Link>
                         </td>
                         <td>{customer.email}</td>
                         <td>{customer.company}</td>
@@ -103,6 +110,7 @@ const CustomersPage = props => {
                     </tr>
                 ))}
             </tbody>
+            )}
         </table>
         
         <Pagination currentPage={currentPage} itemsPerPage={itemsPerPage} length={filteredCustomers.length} onPageChanged={handlePageChange} />

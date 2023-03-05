@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Field from "../components/forms/Field";
 import UserAPI from "../services/usersAPI";
 
@@ -43,6 +44,7 @@ const RegisterPage = () => {
         try {
             const response = await UserAPI.register(user);
             setErrors({});
+            toast.success("You have been registered");
             navigate("/login", { replace: true });
         } catch ({response}) {
             const {violations} = response.data;
@@ -54,6 +56,7 @@ const RegisterPage = () => {
 
                 setErrors(apiErrors);
             }
+            toast.error("An error has occured");
         }
 
     }
