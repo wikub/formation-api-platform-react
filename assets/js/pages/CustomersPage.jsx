@@ -71,6 +71,7 @@ const CustomersPage = props => {
             <input type="text" className="form-control" placeholder="Rechercher un client" onChange={handleSearch} value={search} />
         </div>
         
+        {isLoading ? <TableLoader /> : ( 
         <table className="table table-hover">
             <thead>
                 <tr className="text-center">
@@ -83,7 +84,6 @@ const CustomersPage = props => {
                     <th>Actions</th>
                 </tr>
             </thead>
-            {isLoading ? <TableLoader /> : ( 
             <tbody>
                 {paginateCustomers.map((customer, index) => (
                     <tr key={customer.id} className="text-center">
@@ -110,9 +110,8 @@ const CustomersPage = props => {
                     </tr>
                 ))}
             </tbody>
-            )}
         </table>
-        
+        )}
         <Pagination currentPage={currentPage} itemsPerPage={itemsPerPage} length={filteredCustomers.length} onPageChanged={handlePageChange} />
         
 

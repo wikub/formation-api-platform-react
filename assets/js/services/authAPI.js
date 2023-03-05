@@ -1,9 +1,10 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
+import { API_URL_LOGIN } from "../config";
 
 function authenticate(credentials) {
     return axios
-        .post("/api/login_check", credentials)
+        .post(API_URL_LOGIN, credentials)
         .then(response => response.data.token)
         .then(token => {
             window.localStorage.setItem("authToken", token);
@@ -19,6 +20,11 @@ function logout() {
 }
 
 function setup() {
+    // axios.defaults.headers["Access-Control-Allow-Origin"] = '*';
+    // axios.defaults.headers["Access-Control-Allow-Methods"] = 'GET,PUT,POST,DELETE,PATCH,OPTIONS';
+    // axios.defaults.headers["Access-Control-Allow-Headers"] = 'Content-Type, Authorization';
+    // axios.defaults.headers["Access-Control-Allow-Credentials"] = true;
+
     const token = window.localStorage.getItem("authToken");
 
     if (token) {
